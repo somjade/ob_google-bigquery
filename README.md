@@ -1,4 +1,4 @@
-![Google](https://github.com/openbridge/ob_google-bigquery/raw/master/images/google.png)
+![Google](https://github.com/scbs/scbs_google-bigquery/raw/master/images/google.png)
 
 # Google BigQuery+
 
@@ -46,7 +46,7 @@
 
 
 # Overview
-<b>UPDATE: If you wanted an automated solutions for moving Google Analtyics 360 to Amazon Redshift, Amazon Redshift Spectrum or Amazon Athena, learn more here: https://www.openbridge.com/product/openbridge-google-analytics-360</b>
+<b>UPDATE: If you wanted an automated solutions for moving Google Analtyics 360 to Amazon Redshift, Amazon Redshift Spectrum or Amazon Athena, learn more here: https://www.scbs.com/product/scbs-google-analytics-360</b>
 
 This service is meant to simplify running Google Cloud operations, especially BigQuery tasks. This means you do not have to worry about installation, configuration or ongoing maintenance related to an SDK environment. This can be helpful to those who would prefer to not to be responsible for those activities.
 
@@ -115,11 +115,11 @@ The Google Service Account Authentication [documentation](https://cloud.google.c
 # Installing
 
 ```
-docker build -t openbridge/ob_google-bigquery .
+docker build -t scbs/scbs_google-bigquery .
 ```
 or via Docker Hun simply pull the image locally
 ```
-docker pull openbridge/ob_google-bigquery
+docker pull scbs/scbs_google-bigquery
 ```
 
 # Configuration
@@ -129,13 +129,13 @@ docker pull openbridge/ob_google-bigquery
 Follow these instructions if you are running docker _outside_ of Google Compute Engine:
 
 ```bash
-docker run -t -i --name gcloud-config openbridge/ob_google-bigquery gcloud init
+docker run -t -i --name gcloud-config scbs/scbs_google-bigquery gcloud init
 ```
 
 If you would like to use service account the run command would look like this:
 
 ```bash
-docker run -t -i --name gcloud-config openbridge/ob_google-bigquery gcloud auth activate-service-account <your-service-account-email> --key-file /tmp/your-key.p12 --project <your-project-id>
+docker run -t -i --name gcloud-config scbs/scbs_google-bigquery gcloud auth activate-service-account <your-service-account-email> --key-file /tmp/your-key.p12 --project <your-project-id>
 ```
 
 Notice the email, key and project variables are needed to run it this way.
@@ -145,15 +145,15 @@ Notice the email, key and project variables are needed to run it this way.
 Re-use the credentials from gcloud-config volumes & run sdk commands:
 
 ```bash
-docker run --rm -ti --volumes-from gcloud-config openbridge/ob_google-bigquery gcloud info
-docker run --rm -ti --volumes-from gcloud-config openbridge/ob_google-bigquery gsutil ls
+docker run --rm -ti --volumes-from gcloud-config scbs/scbs_google-bigquery gcloud info
+docker run --rm -ti --volumes-from gcloud-config scbs/scbs_google-bigquery gsutil ls
 ```
 
 If you are using this image from _within_ [Google Compute Engine](https://cloud.google.com/compute/). If you enable a Service Account with the necessary scopes, there is no need to auth or use a config volume, Just run your commands:
 
 ```bash
-docker run --rm -ti openbridge/ob_google-bigquery gcloud info
-docker run --rm -ti openbridge/ob_google-bigquery gsutil ls
+docker run --rm -ti scbs/scbs_google-bigquery gcloud info
+docker run --rm -ti scbs/scbs_google-bigquery gsutil ls
 ```
 
 ## Setting Up A Local Authentication File
@@ -169,7 +169,7 @@ For example, if you name your auth file `creds.json` you would set the config to
 To use your authentication file, you need to mount it within the container in the same location specified in your `.env` file via `-v` variable:
 
 ```bash
-docker run -it -v /Users/bob/github/ob_google-bigquery/auth/prod.json:/creds.json --env-file ./env/prod.env openbridge/ob_google-bigquery gcloud info
+docker run -it -v ./scbs_google-bigquery/auth/prod.json:/creds.json --env-file ./env/prod.env scbs/scbs_google-bigquery gcloud info
 ```
 
 # BigQuery Exports
@@ -231,7 +231,7 @@ GOOGLE_CLOUDSDK_COMPUTE_REGION=us-east1
 GOOGLE_BIGQUERY_SQL=ga360master
 GOOGLE_BIGQUERY_TABLE=ga_sessions_
 GOOGLE_BIGQUERY_JOB_DATASET=1999957242
-GOOGLE_STORAGE_BUCKET=openbridge-buzz # do not include leading or trailing slashes /
+GOOGLE_STORAGE_BUCKET=scbs-buzz # do not include leading or trailing slashes /
 GOOGLE_STORAGE_PATH=folder/location/here # do not include leading or trailing slashes /
 AWS_ACCESS_KEY_ID=QWWQWQWLYC2NDIMQA
 AWS_SECRET_ACCESS_KEY=WQWWQqaad2+tyX0PWQQWQQQsdBsdur8Tu
@@ -280,7 +280,7 @@ GOOGLE_CLOUDSDK_COMPUTE_ZONE=us-east1-b
 GOOGLE_CLOUDSDK_COMPUTE_REGION=us-east1
 GOOGLE_BIGQUERY_SQL=ga_bounces
 GOOGLE_BIGQUERY_JOB_DATASET=1999957242
-GOOGLE_STORAGE_BUCKET=openbridge-buzz
+GOOGLE_STORAGE_BUCKET=scbs-buzz
 GOOGLE_BIGQUERY_TABLE=ga_sessions_
 GOOGLE_STORAGE_PATH=foo/place
 AWS_ACCESS_KEY_ID=QWWQWQWLYC2NDIMQA
@@ -323,7 +323,7 @@ gs://${GOOGLE_STORAGE_BUCKET}/${GOOGLE_STORAGE_PATH}/${GOOGLE_BIGQUERY_SQL}/${FI
 For our `ga_bounces` example, the resulting exports would be transfer to location and context like this:
 
 ```bash
-gs://openbridge-buzz/production/ga_bounces/20170101_asd12XZ_ga_bounces_export_000.gz
+gs://scbs-buzz/production/ga_bounces/20170101_asd12XZ_ga_bounces_export_000.gz
 ```
 
 How long are files persisted in that bucket? There is a current lifecycle policy set keep the export for `30` days. The `/lifecycle.json` defines the bucket policy for the retention of files stored there. If you want to persist them for a longer time period edit the policy accordingly. Simply change the `30` to whatever number of days you feel is needed.
@@ -377,7 +377,7 @@ If you wanted to set this up as a recurring operation, you can create cron task:
 However, you don't have to use this job wrapper. You can call the process directly via Docker:
 
 ```bash
-docker run -it -v /Users/bob/Documents/github/ob_google-bigquery/auth/prod.json:/auth.json -v /Users/bob/Documents/github/ob_google-bigquery/sql:/sql --env-file /env/file.env openbridge/ob_google-bigquery bigquery-run prod 2017-01-01 2017-01-01
+docker run -it -v /Users/bob/Documents/github/scbs_google-bigquery/auth/prod.json:/auth.json -v /Users/bob/Documents/github/scbs_google-bigquery/sql:/sql --env-file /env/file.env scbs/scbs_google-bigquery bigquery-run prod 2017-01-01 2017-01-01
 ```
 
 # CRON
@@ -463,12 +463,12 @@ docker run -it --rm \
     -e "GOOGLE_BIGQUERY_JOB_DATASET=123456789" \
     -e "GOOGLE_BIGQUERY_TABLE=ga_sessions_" \
     -e "GOOGLE_STORAGE_PATH=foo/place" \
-    -e "GOOGLE_STORAGE_BUCKET=openbridge-foo" \
+    -e "GOOGLE_STORAGE_BUCKET=scbs-foo" \
     -e "AWS_ACCESS_KEY_ID=12ASASKSALSJLAS" \
     -e "AWS_SECRET_ACCESS_KEY=ASASAKEWPOIEWOPIEPOWEIPWE" \
     -e "AWS_S3_BUCKET=foo/ebs/buzz/foo/google/google_analytics/ga-table" \
     -e "LOG_FILE=/ebs/logs/gcloud.log" \
-    openbridge/ob_google-bigquery \
+    scbs/scbs_google-bigquery \
     gsutil rsync -d -r gs://{{GOOGLE_STORAGE_BUCKET}}/ s3://{{AWS_S3_BUCKET}}/
 ```
 
@@ -479,18 +479,18 @@ docker run -it --rm \
     -e "GOOGLE_CLOUDSDK_ACCOUNT_FILE=/auth.json" \
     -e "GOOGLE_CLOUDSDK_ACCOUNT_EMAIL=GOOGLE_CLOUDSDK_ACCOUNT_EMAIL=foo@appspot.gserviceaccount.com" \
     -e "GOOGLE_CLOUDSDK_CORE_PROJECT=foo-buzz-139217" \
-    openbridge/ob_google-bigquery \
+    scbs/scbs_google-bigquery \
     gcloud compute instances list
 ```
 
 To see a list of available `gcloud` commands:
 
 ```bash
-docker run -it --rm --env-file ./env/prod.env -v /Users/bob/github/ob_google-bigquery/auth/prod.json:/auth.json openbridge/ob_google-bigquery gcloud -h
+docker run -it --rm --env-file ./env/prod.env -v /Users/bob/github/scbs_google-bigquery/auth/prod.json:/auth.json scbs/scbs_google-bigquery gcloud -h
 ```
 
 ```bash
-docker run -it --rm --env-file ./env/prod.env -v /Users/bob/github/ob_google-bigquery/auth/prod.json:/auth.json -v /Users/bob/github/ob_google-bigquery/cron/crontab.conf:/crontab.conf gcloud bq ls -n 1000 dougie-buzz-133217:227999242
+docker run -it --rm --env-file ./env/prod.env -v /Users/bob/github/scbs_google-bigquery/auth/prod.json:/auth.json -v /Users/bob/github/scbs_google-bigquery/cron/crontab.conf:/crontab.conf gcloud bq ls -n 1000 dougie-buzz-133217:227999242
 ```
 
 Run by setting the name, start and end dates:
@@ -512,19 +512,19 @@ bq rm -r -f "${GOOGLE_BIGQUERY_WD_DATASET}"
 Remove gzip files from Cloud Storage
 
 ```bash
-docker run --rm -ti --volumes-from gcloud-config openbridge/ob_google-bigquery gsutil rm gs://"${GOOGLE_STORAGE_BUCKET}"/"${GOOGLE_STORAGE_PATH}"/"${GOOGLE_BIGQUERY_SQL}"/"${FILEDATE}"_"${GOOGLE_BIGQUERY_SQL}"_*.gz
+docker run --rm -ti --volumes-from gcloud-config scbs/scbs_google-bigquery gsutil rm gs://"${GOOGLE_STORAGE_BUCKET}"/"${GOOGLE_STORAGE_PATH}"/"${GOOGLE_BIGQUERY_SQL}"/"${FILEDATE}"_"${GOOGLE_BIGQUERY_SQL}"_*.gz
 ```
 
 Remove all files from Cloud Storage
 
 ```bash
-docker run --rm -ti --volumes-from gcloud-config openbridge/ob_google-bigquery gsutil -m rm -f -r gs://"${GOOGLE_STORAGE_BUCKET}"/**
+docker run --rm -ti --volumes-from gcloud-config scbs/scbs_google-bigquery gsutil -m rm -f -r gs://"${GOOGLE_STORAGE_BUCKET}"/**
 ```
 
 Remove remove tables that match a pattern from BQ
 
 ```bash
-docker run --rm -ti --volumes-from gcloud-config openbridge/ob_google-bigquery bash
+docker run --rm -ti --volumes-from gcloud-config scbs/scbs_google-bigquery bash
 ```
 
 The at the command prompt:
@@ -536,7 +536,7 @@ for i in $(bq ls -n 9999 ${GOOGLE_CLOUDSDK_CORE_PROJECT} | grep "<pattern>" | aw
 Generate list of tables from BQ. Check if any tables exist that match a pattern. If yes, 0=yes a match and 1=no match
 
 ```bash
-docker run --rm -ti --volumes-from gcloud-config openbridge/ob_google-bigquery bash
+docker run --rm -ti --volumes-from gcloud-config scbs/scbs_google-bigquery bash
 ```
 
 Then at the command prompt:
@@ -548,7 +548,7 @@ BQTABLECHECK=$(bq ls -n 1000 "${GOOGLE_CLOUDSDK_CORE_PROJECT}":"${GOOGLE_BIGQUER
 Generate list of tables from BQ. Check if any tables exist that match a date pattern pattern. If yes, 0=yes a match and 1=no match
 
 ```bash
-docker run --rm -ti --volumes-from gcloud-config openbridge/ob_google-bigquery bash
+docker run --rm -ti --volumes-from gcloud-config scbs/scbs_google-bigquery bash
 ```
 
 Then at the command prompt:
